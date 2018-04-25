@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<robot name="car">
+  <link name="base_link2">
+    <visual name="base_visual">
+      <origin xyz="0.4 0 -2" rpy="1.5708 0 -1.5708" />
+      <geometry>
+        <mesh filename="package://robosense_sdk/car_rviz_model/map/CAR_original.dae" scale="1.1 1.1 1.1"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>

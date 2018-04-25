@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<launch>
+   <!--  rslidar pointcloud parse node -->
+    <node  name="cloud_node" pkg="rslidar_pointcloud" type="cloud_node" output="screen" >
+    <param name="model" value="RS16"/>
+	<param name="hori_angel_begin" value="0"/>
+    <param name="hori_angel_end" value="0"/>   
+    <param name="curves_path" value="$(find rslidar_pointcloud)/data/rs_lidar_16/LM812DATA/curves.csv" />
+    <param name="angle_path" value="$(find rslidar_pointcloud)/data/rs_lidar_16/LM812DATA/angle.csv" />
+    <param name="channel_path" value="$(find rslidar_pointcloud)/data/rs_lidar_16/LM812DATA/ChannelNum.csv" />
+  </node>
+
+<!--localization -->
+
+     <node pkg="robosense_localization" name="robosense_localization" type="robosense_localization" output="screen">
+         <param name="map_path" value="$(find robosense_sdk)/data/GYY/industry_map.vtk"/>
+    </node>
+    
+
+<!--main testing node-->
+  <node pkg="robosense_sdk" type="test_with_map"  name="test_with_map"  output="screen" >   
+	<param name="pcap" value="$(find robosense_sdk)/data/DXC/validation.pcap" />
+    <param name="key_path" value="$(find robosense_sdk)/key" />  
+    <param name="ethernet_name" value="eth0" />	 
+    <param name="port" value="6699" />  
+	<param name="lidar_config_path" value="$(find auto_align_tool)/save_config/align.txt" />
+    <param name="args_path" value="$(find robosense_sdk)/usr_args/perception_args_16.xml" />
+	<param name="receiv_ip" value="192.168.1.200" />
+    <param name="receiv_port" value="6699" />
+  </node>
+
+<!--car module for ui display-->
+  <group>
+    <arg name="gui" default="False" />
+    <param name="use_gui" value="$(arg gui)"/>
+    <param name="robot_description" textfile="$(find robosense_sdk)/car_rviz_model/map/default.urdf" />
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"  />
+    <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher"  />
+  </group>
+
+<!--rviz show-->
+  <node pkg="rviz" type="rviz" name="rviz"  args="-d $(find robosense_sdk)/cfg/robosense_map_test.rviz"/>
+
+
+</launch>
