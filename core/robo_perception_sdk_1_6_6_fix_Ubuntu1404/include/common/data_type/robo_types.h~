@@ -1,0 +1,493 @@
+
+/**
+ *****************************************************************************
+ * COPYRIGHT STATEMENT
+ * Copyright (c) 2017, Robosense Co.,Ltd. - www.robosense.ai
+ * All Rights Reserved.
+ *
+ * You can not use, copy or spread without official authorization.
+ *****************************************************************************
+ *
+ * Author: Robosense Perception Group
+ * Version: 1.3.6
+ * Date: 2017.8
+ *
+ * DESCRIPTION
+ *
+ * Robosense built-in data structs type definition module.
+ *
+ */
+
+#ifndef ROBOSENSE_TYPES_H
+#define ROBOSENSE_TYPES_H
+
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
+namespace Robosense
+{
+
+#define UNKNOW 0
+#define PED 1
+#define BIC 2
+#define CAR 3
+#define TRUCK_BUS 4
+
+const double p_i = 3.1415926535897932384626433832795;
+
+template<typename T>
+T max(const T &a, const T &b)
+{
+  return a > b ? a : b;
+}
+
+template<typename T>
+T min(const T &a, const T &b)
+{
+  return a < b ? a : b;
+}
+
+
+//--------------------- robosense build-in fundamental structs ---------------------------//
+/**
+ * @brief basic data struct
+ */
+struct Point2f  // fundamental 2D data structure
+{
+  Point2f();
+
+  Point2f(const float &tx, const float &ty);
+
+  Point2f(const Point2f &p);
+
+  Point2f &operator=(const Point2f &p);
+
+  Point2f &operator+=(const Point2f &p);
+
+  Point2f &operator-=(const Point2f &p);
+
+  Point2f &operator*=(const float &t);
+
+  Point2f &operator*=(const Point2f &p);
+
+  Point2f operator+(const Point2f &b) const;
+
+  Point2f operator-(const Point2f &b) const;
+
+  Point2f operator*(const float &t) const;
+
+  Point2f operator*(const Point2f &p) const;
+
+  float getLength() const;
+
+  float x, y;
+};
+
+/**
+ * @brief basic data struct
+ */
+struct Point3f // fundamental 3D data structure
+{
+  Point3f();
+
+  Point3f(const float &tx, const float &ty, const float &tz);
+
+  Point3f(const Point3f &p);
+
+  Point3f &operator=(const Point3f &p);
+
+  Point3f &operator+=(const Point3f &p);
+
+  Point3f &operator-=(const Point3f &p);
+
+  Point3f &operator*=(const float &t);
+
+  Point3f &operator*=(const Point3f &p);
+
+  Point3f operator+(const Point3f &b) const;
+
+  Point3f operator-(const Point3f &b) const;
+
+  Point3f operator*(const float &t) const;
+
+  Point3f operator*(const Point3f &p) const;
+
+  float getLength() const;
+
+  float x, y, z;
+};
+
+/**
+ * @brief basic data struct
+ */
+struct Point4f // fundamental 4D data structure
+{
+  Point4f();
+
+  Point4f(const float &tx, const float &ty, const float &tz, const float &tw);
+
+  Point4f(const Point4f &p);
+
+  Point4f &operator=(const Point4f &p);
+
+  Point4f &operator+=(const Point4f &p);
+
+  Point4f &operator-=(const Point4f &p);
+
+  Point4f &operator*=(const float &t);
+
+  Point4f &operator*=(const Point4f &p);
+
+  Point4f operator+(const Point4f &b) const;
+
+  Point4f operator-(const Point4f &b) const;
+
+  Point4f operator*(const float &t) const;
+
+  Point4f operator*(const Point4f &p) const;
+
+  float getLength() const;
+
+  float x, y, z, w;
+};
+
+
+/**
+ * @brief Range definitions for 2D
+ */
+struct Range2D
+{
+  Range2D();
+  Range2D(float x_min, float x_max, float y_min, float y_max);
+  Range2D(const Range2D &r);
+  Range2D &operator=(const Range2D &r);
+
+  float xmin, xmax, ymin, ymax;
+};
+
+/**
+ * @brief Range definitions for 3D
+ */
+struct Range3D
+{
+  Range3D();
+  Range3D(float x_min, float x_max, float y_min, float y_max, float z_min, float z_max);
+  Range3D(const Range3D &r);
+  Range3D &operator=(const Range3D &r);
+
+  float xmin, xmax, ymin, ymax, zmin, zmax;
+};
+
+
+/**
+ * @brief basic data struct for bounding box
+ */
+struct BasiciBoundingBox
+{
+  BasiciBoundingBox();
+
+  BasiciBoundingBox(const BasiciBoundingBox &bbox);
+
+  BasiciBoundingBox &operator=(const BasiciBoundingBox &bbox);
+
+  Point3f corners[8];/**< 8 corners of boundingbox */
+  Point3f size; /**< x:length, y:width, z:height, notice that length >= width*/
+
+};
+
+/**
+ * @brief boundingbox struct
+ *
+ */
+struct BoundingBox
+{
+  BoundingBox();
+
+  BoundingBox(const BoundingBox &box);
+
+  BoundingBox &operator=(const BoundingBox &box);
+
+  bool operator==(const BoundingBox &box);
+
+  bool operator!=(const BoundingBox &box);
+
+  Point3f corners[8];/**< 8 corners of boundingbox */
+  Point3f size;/**< x:length, y:width, z:height, notice that length >= width*/
+  Point3f center; /**<box geometry center*/
+  Point2f polar_center; /**<box geometry center in polar system*/
+//  Point3f anchor;/**< the nearest corner point of box to the lidar*/
+  float angle; /**< 2D (x-y plane) box main-direction(parallel to the longer edge of box) angle relative to x-axis of lidar coordinate*/
+};
+
+
+/**
+ * @brief kalman filter struct, depicts the parameters need by kalman filter.
+ * @ingroup tracker
+ */
+struct KalmanParms
+{
+  Point4f init_state; /**<init state for kalman*/
+  float cycle_period;/**<time period for update*/
+  Point4f process_noise_conv;/**<process noise*/
+  Point4f measure_noise_conv;/**<measurement noise*/
+};
+
+
+/**
+ * @brief cluster container struct
+ */
+struct PointCluster //segmentation module IO structure
+{
+  PointCluster();
+
+  PointCluster(const PointCluster &pc);
+
+  PointCluster &operator=(const PointCluster &pc);
+
+  int object_id; /**< object ID, which will be set after clustering, then the id will be used as a commonly global identity for
+											every object in the procedure following such as tracking and classification and their match for fusion*/
+
+  float density; /**< points density respect to box volume*/
+
+  BoundingBox box;/**< original bounding-box for a segmented point cluster*/
+
+  BoundingBox obj_box;/**< refined bounding-box for an recognized object*/
+
+  pcl::PointCloud<pcl::PointXYZI> pointCloud; /**< pointcloud for a segmented cluster*/
+};
+
+/**
+ * @brief pose
+ */
+struct PoseParams
+{
+  Eigen::Vector3f pos;
+  Eigen::Vector3f angle;
+};
+
+
+/**
+ * @brief Lidar mounting parameters
+ */
+struct LidarMountParam
+{
+  float lidar_mount_height;  /**< the lidar mounting height frome the ground*/
+  Point3f lidar_mount_angle; /**<the lidar mounting angle (roll, pitch, yaw) relative to standard coordinate (x points front, y points left, z points up, x-y horizontal)*/
+};
+
+/**
+  * @brief UserConfigParam parameters container, in order to filter out background and static objects so that the following tracking
+ * and classification can focus on the foreground dynamic objects, the lidar assumed to be mounted horizontally.
+*/
+struct UserConfigParam
+{
+  LidarMountParam lidar_mount; /**<liar mounting params*/
+  float blind_radius; /**<blind zone radius*/
+  float vehicle_chassis_height; /**< the assumed chassis height of target vhichle-like objects*/
+  float object_height_limit; /**<height threshold for an object to be detected*/
+  float object_length_limit; /**</length threshold for an object to be detected*/
+  float object_width_limit; /**<width threshold for an object to be detected*/
+  float length_width_ratio_limit; /**<the ratio of height and length threshold for an object to be detected*/
+  float max_area_limit; /**< possible vechile-like object area restriction*/
+  float dist2center_restrict; /**<near to the lidar will be treated as disturbing and removed*/
+  float height_estimate_error; /**< an acceptable height estimate error for uncertainty*/
+  float near_field_dis; /**< a distance defines a near field range for special process*/
+  float valid_segment_density; /**< points density below will be filtered out*/
+  float center_cluster_dis; /**<re-cluster euler distance for segments within blind zone*/
+  unsigned int center_cluster_max_num; /**< re-cluster max segments num to merge for segments within blind zone*/
+};
+
+
+struct LidarCoordInVehicle
+{
+  Point3f lidar_trans;
+  Point3f lidar_rotate;
+};
+
+
+struct PerceptionParams
+{
+  PerceptionParams();
+  PerceptionParams(const PerceptionParams &pa);
+  PerceptionParams &operator=(const PerceptionParams &pa);
+
+  void load(const std::string &filename);
+  void save(const std::string &filename);
+
+  //user defined args
+  UserConfigParam usr_config;
+
+  //user defined car transform between lidar and car coordinate
+  LidarCoordInVehicle lidar_coord_in_vehicle;
+
+  //detection args
+  bool is_inner_merge;
+  bool is_infer_merge;
+  bool is_geo_filter;
+  bool is_auto_align;
+  bool is_free_space_filter;
+
+  Range3D ground_range;
+  Range3D detect_range;
+
+  float grid_step;
+  float grow_step;
+  float grow_height;
+
+  int min_pts_num;
+  int dilation_radius;
+
+  float plane_thd;
+
+  int plane_mode;
+
+  float line_thd;
+  float angle_thd;
+
+  float sigma;
+  float gp_err;
+
+  std::string gnd_model_path;
+
+  //tracking args
+  float track_range;
+  Point2f track_geo_err;
+  Point3f track_robust;
+  int pre_track_num;
+  float frame_time;
+  int frame_vanish_num;
+  int history_num;
+
+  Point4f p_noise_conv;
+  Point4f m_noise_conv;
+
+  //classify
+  int class_mode;
+  bool with_enhance;
+  std::string classify0_model_path;
+  std::string classify1_model_path;
+
+  //roi filter
+  std::string roi_feature_map;
+
+};
+
+
+//---------------------------------version 2 of tracking and filtering struct, for fusion ----------------------------------------------
+
+/**
+ * @brief tracker info container struct
+ */
+struct TargetTracker
+{
+  TargetTracker();
+
+  TargetTracker(const TargetTracker &tar);
+
+  TargetTracker &operator=(const TargetTracker &tar);
+
+  int tracker_id; /**<tracking ID, which assigns an object to a certain tracker.*/
+  int state; /**<state for an object in tracking procedure, have 3 state: 0 means new-appear, 1 means under tracking, 2 means disappearing.*/
+  Point2f velocity; /**<tracking object velocity, include x and y directional velocity, z direction is not considered at present, maybe in the future.*/
+  Point2f position; /**<tracking object position, notice that it is different from the box center in the PointCluster struct, the latter
+								 means the geometry info while the position means the result position for a tracked object calculated by
+								 the tracking algorithm.*/
+
+  Point2f acceleration; /**<tracking object acceleration, include x and y directional acceleration, z direction is not considered at present, maybe in the future.*/
+
+  float angle_vel; /**<tracking object angle velocity, in radian unit*/
+
+  float angle_acc; /**<tracking angle acceleration between tracked objects center of adjacent frames, used to evaluate the trajectory smoothness*/
+
+  Point2f velocity_abs; /**< (optional) global absolute velocity, always used to remove static background objects,
+														Notice that only be obtained with global INS info provided, otherwise, keep 0 value.*/
+  unsigned long sequence_length; /**<current tracker trajectory length*/
+
+  float possibility;//**< the possibility measurement that the current target is associated to the same object in the last frame */
+
+  float robustness; /**< evaluate robustness of a tracker through a historical lenght of frame */
+};
+
+
+/**
+ * @brief classification info container struct
+ */
+struct TargetLabel
+{
+  TargetLabel();
+
+  TargetLabel(const TargetLabel &tl2);
+
+  TargetLabel &operator=(const TargetLabel &tl2);
+
+  int label; /**<object label after classification, a certain number represents a class, such as car, pedestrian, bike/motorcycle, truck and so on.*/
+  std::vector<float> prob_vec;/**<probability for classification*/
+};
+
+
+/**
+ * @brief assembly info of tracking and classification
+ */
+struct PerceptResult
+{
+  PerceptResult();
+
+  PerceptResult(const PerceptResult &per);
+
+  PerceptResult &operator=(const PerceptResult &per);
+
+  TargetTracker tracker; /**<tracker*/
+  TargetLabel labeler; /**<classifier*/
+  PointCluster cluster;   /**<cluster for the tracked object.*/
+
+  bool is_segmented;/**<if the Target is segmented*/
+  bool is_tracked;/**<if the Target is tracked*/
+  bool is_classified;/**<if the Target is classified*/
+
+  bool is_real;/**<if the Target is real or virtual (such as predicted object)*/
+
+};
+
+
+/**
+ * @brief another assembly info of tracking and classification, without using pointcloud
+ */
+struct PerceptResult2
+{
+  PerceptResult2();
+
+  PerceptResult2(const PerceptResult2 &per);
+
+  PerceptResult2 &operator=(const PerceptResult2 &per);
+
+  TargetTracker tracker; /**<tracker*/
+  TargetLabel labeler; /**<classifier*/
+  BoundingBox box;   /**<bbox for the tracked object.*/
+
+  bool is_segmented;/**<if the Target is segmented*/
+  bool is_tracked;/**<if the Target is tracked*/
+  bool is_classified;/**<if the Target is classified*/
+
+  bool is_real;/**<if the Target is real or virtual (such as predicted object)*/
+};
+
+
+struct PerceptOutput
+{
+  Point3f location;
+  Point3f direction;
+  Point3f size;
+
+  int tracker_id;
+  Point2f velocity;
+  Point2f acceleration;
+
+  int label;
+};
+
+
+
+
+}
+
+#endif //ROBOSENSE_TYPES_H
