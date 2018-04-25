@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<node name="control_node" pkg="control_tool" type="control_node">
+  </node>
+
+  <node name="save_node" pkg="control_tool" type="save_node">
+  </node>
+
+  <node name="align_node" pkg="auto_align_tool" type="align_node">
+  </node>
+  
+  <node name="align_save_node" pkg="auto_align_tool" type="align_save_node">
+  </node>
+
+  <node name="align_adjust_node" pkg="auto_align_tool" type="align_adjust_node" output="screen">
+  </node>
+
+  <node name="rslidar_node" pkg="rslidar_driver" type="rslidar_node" output="screen" >
+    <param name="model" value="RS16"/>
+    <param name="pcap" value="$(find robosense_sdk)/data/2017-09-28-10-41-26/lidar.pcap" />
+    <!--param name="device_ip" value="192.168.1.200"/-->
+    <param name="port" value="6699" />
+  </node>
+
+  <node  name="cloud_node" pkg="rslidar_pointcloud" type="cloud_node" output="screen" >
+    <param name="model" value="RS16"/>
+	<param name="hori_angel_begin" value="0"/>
+    <param name="hori_angel_end" value="0"/>   
+    <param name="curves_path" value="$(find rslidar_pointcloud)/data/rs_lidar_16/curves.csv" />
+    <param name="angle_path" value="$(find rslidar_pointcloud)/data/rs_lidar_16/angle.csv" />
+    <param name="channel_path" value="$(find rslidar_pointcloud)/data/rs_lidar_16/ChannelNum.csv" />
+  </node>
+
+  <node pkg="rviz" name="rviz" type="rviz"  args="-d $(find auto_align_tool)/cfg/demo.rviz"/>
+
+</launch>

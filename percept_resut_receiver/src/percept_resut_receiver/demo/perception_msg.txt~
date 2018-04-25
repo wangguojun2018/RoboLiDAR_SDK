@@ -1,0 +1,34 @@
+
+/**
+ * Example of Robosense SDK usage.
+ */
+#include "communication.h"
+
+Robosense::Communication *communicator;
+
+int main(int argc, char **argv)
+{
+
+  communicator = new Robosense::Communication();
+  communicator->initReceiver();
+  communicator->setPort(60000);//
+
+  std::vector<Robosense::PerceptResultMsg> result_msgs;
+  Robosense::Header header;
+  Robosense::Pose pose;
+
+
+  while(true)
+  {
+    std::vector<Robosense::PerceptResultMsg>().swap(result_msgs);
+    communicator->receMsg(result_msgs,header,pose);
+		
+    //todo: your own work
+
+
+  }
+
+  return 0;
+}
+
+

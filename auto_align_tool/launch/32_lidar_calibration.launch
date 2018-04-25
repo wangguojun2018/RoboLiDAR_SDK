@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<launch>
+
+
+  <node name="align_node" pkg="auto_align_tool" type="align_node">
+  </node>
+  
+  <node name="align_save_node" pkg="auto_align_tool" type="align_save_node">
+  </node>
+
+  <node name="align_adjust_node" pkg="auto_align_tool" type="align_adjust_node" output="screen">
+  </node>
+
+  <node  name="cloud_node" pkg="rslidar_pointcloud" type="cloud_node" output="screen" >
+	<param name="model" value="RS32"/>
+	<!--param name="frame_id" value="rs_odom" /-->
+	<param name="hori_angel_begin" value="0"/>
+	<param name="hori_angel_end" value="0"/>   
+	<param name="curves_path" value="$(find rslidar_pointcloud)/data/rs_lidar_32/B16/curves.csv" />
+	<param name="angle_path" value="$(find rslidar_pointcloud)/data/rs_lidar_32/B16/angle.csv" />
+	<param name="channel_path" value="$(find rslidar_pointcloud)/data/rs_lidar_32/B16/ChannelNum.csv" />
+</node>
+
+  <node pkg="rviz" name="rviz" type="rviz"  args="-d $(find auto_align_tool)/cfg/demo.rviz"/>
+
+</launch>
