@@ -88,23 +88,55 @@ bool Communication::receMsg(std::vector<PerceptResultMsg> &msgs, Header &header,
   }
   char cli_ip[INET_ADDRSTRLEN] = "";//INET_ADDRSTRLEN=16
   socklen_t cliaddr_len = sizeof(receiver_dest_addr_);
-  char recv_buf[10240] = {0};
-  // 接受数据
+
+  char recv_buf[50000] = {0};
   int recv_len = recvfrom(receiver_sockfd_, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *) &receiver_dest_addr_, &cliaddr_len);
   inet_ntop(AF_INET, &receiver_dest_addr_.sin_addr, cli_ip, INET_ADDRSTRLEN);
 
-  CommunicationMsg *tmp_msg = new CommunicationMsg;
-  tmp_msg = (CommunicationMsg *) recv_buf;
-  int str_len = tmp_msg->header.length;
-  std::string tmp_str;
-  tmp_str.resize(str_len);
-  for(int i = 0; i < str_len; ++i)
-  {
-    tmp_str[i] = tmp_msg->perceptions[i];
-  }
-  msgs = toData(tmp_str);
-  header = tmp_msg->header;
-  pose = tmp_msg->pose;
+//  /------------------- origin receive -----------------------
+//  CommunicationMsg *tmp_msg = new CommunicationMsg;
+//  tmp_msg = (CommunicationMsg *) recv_buf;
+//  int str_len = tmp_msg->header.length;
+//  std::string tmp_str;
+//  tmp_str.resize(str_len);
+//  for(int i = 0; i < str_len; ++i)
+//  {
+//      tmp_str[i] = tmp_msg->perceptions[i];
+//  }
+//  msgs = toData(tmp_str);
+//  header = tmp_msg->header;
+//  pose = tmp_msg->pose;
+
+
+/// ---------- boost deserialize ---------------
+    std::string rec_str;
+    for (int i = 0; i < recv_len; ++i)
+    {
+        rec_str += recv_buf[i];
+    }
+
+  try {
+          CommunicationMsg boost_msg;
+          boost_msg = this->Deserialize( rec_str );
+          std::cout << "boost_msg.pcep_msg.size(): " << boost_msg.pcep_msg.size() << std::endl;
+          header = boost_msg.header;
+          pose = boost_msg.pose;
+          msgs = boost_msg.pcep_msg;
+      }
+  catch ( std::exception& e )
+      {
+            std::cerr << e.what() << std::endl;
+      }
+
+    // test
+    std::cout << "header.object_num:" << header.object_num << std::endl;
+    std::cout << "pose: " << pose.x << ", " << pose.y << ", "<< pose.z << std::endl;
+    for (int j = 0; j < msgs.size(); ++j)
+    {
+        std::cout << j << ": " << msgs[j].track_id << std::endl;
+    }
+    std::cerr << "-----------------" << std::endl;
+
   return true;
 }
 
@@ -157,4 +189,14 @@ bool Communication::setServerIP(const std::string &server_ip)
   server_ip_ = server_ip;
   return true;
 }
+
+    CommunicationMsg Communication::Deserialize(const std::string &message)
+    {
+        CommunicationMsg msg;
+        std::istringstream archiveStream(message);
+        boost::archive::text_iarchive archive(archiveStream);
+        archive >> msg;
+        return msg;
+    }
+
 }

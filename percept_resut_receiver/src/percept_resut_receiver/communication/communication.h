@@ -32,6 +32,11 @@
 #include <string>
 #include <iostream>
 
+// boost
+#include <sstream>
+//#include <boost/asio.hpp>
+//using boost::asio::ip::udp;
+
 namespace Robosense{
     class Communication{
     public:
@@ -45,10 +50,13 @@ namespace Robosense{
 
         bool setServerIP(const std::string& server_ip = "192.168.1.255");
         bool setPort(const unsigned int& port = 60000);
-    protected:
 
+    protected:
         std::string toString (const std::vector<PerceptResultMsg>& theStruct);
         std::vector<PerceptResultMsg> toData(const std::string str);
+        CommunicationMsg Deserialize(const std::string &message);
+
+    protected:
         unsigned short port_;
         std::string server_ip_;
 
@@ -59,6 +67,9 @@ namespace Robosense{
 
         bool init_sender_,init_receiver_;
     private:
+
+        int tmp_count;
+        CommunicationMsg recv_stru;
     };
 }
 
